@@ -1,0 +1,1 @@
+FILTER_CSV=['action_type', 'author.name', 'message', 'message_type','timestamp']
