@@ -90,5 +90,6 @@ def get_peaks(id):
 
     return peaks2
 
-id = get_chat(url)
-peaks=get_peaks(id)
+def parse(url):
+    id = get_chat(url)
+    return id, get_peaks(id)
