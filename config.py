@@ -1,1 +1,1 @@
-FILTER_CSV=['action_type', 'author.name', 'message', 'message_type','timestamp']
+FILTER_CSV=['action_type', 'author.name', 'message', 'message_type', 'time_in_seconds', 'timestamp']

@@ -1,0 +1,9 @@
+FROM python:alpine
+
+RUN pip install matplotlib 
+RUN pip install pandas 
+RUN pip install chat_downloader  
+RUN pip install scipy
+RUN pip install Flask
+# RUN pip install request
+RUN pip install jsonify
