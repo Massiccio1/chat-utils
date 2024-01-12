@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Data Fetcher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        #image-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>API Data Fetcher</h1>
+
+    <label for="link">Link:</label>
+    <input type="text" id="link" placeholder="Enter link">
+
+    <br>
+
+    <label for="parameter">Prominence:</label>
+    <input type="range" id="prominence" min="0" max="100" value="50">
+    <span id="parameter-value-p">50</span>
+    <br>
+    <br>
+
+    <label for="parameter">Range:</label>
+    <input type="range" id="range" min="20" max="500" value="60">
+    <span id="parameter-value-r">60</span>
+    <br>
+
+    
+
+    <button onclick="postData()">Fetch Data</button>
+    <button onclick="test()">Test</button>
+    <table>
+        <tr>
+          <th>
+            
+            <div id="image-container"></div>
+          </th>
+          <th>
+            <div id="title-container"></div>
+            <br>
+            <div id="thumbnail-container"></div>
+            <br>
+            <div id="text-container"></div>
+          </th>
+        </tr>
+      </table>
+    <div id="image-container">
+        <!-- Fetched image will be displayed here -->
+    </div>
+
+    <script>
+        function postData() {
+            const link = document.getElementById('link').value;
+            const prominence = document.getElementById('prominence').value;
+            const range = document.getElementById('range').value;
+
+            document.getElementById('image-container').innerHTML = "fetching...."
+            document.getElementById('text-container').innerHTML = ""
+            document.getElementById('title-container').innerHTML = ""
+            document.getElementById('thumbnail-container').innerHTML = ""
+
+
+            // Make an API request with link and parameter
+            // Replace the placeholder with your actual API endpoint
+            const site = '';
+            const api = '/parse';
+            //const apiUrl = `${apiEndpoint}?link=${link}&parameter=${parameter}`;
+
+            // Assuming you are using fetch to make the API call
+            fetch(api, {
+                method: "POST", // *GET, POST, PUT, DELETE, etc.
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    "url":link,
+                    "prominence":parseInt(prominence),
+                    "range":parseInt(range)
+                }), // body data type must match "Content-Type" header
+              })
+                .then(response => response.json())
+                .then(data => {
+                    // Assuming the API returns an image URL
+                    console.log(data)
+                    console.log(data.data.id)
+                    console.log(data.data.peaks)
+                    console.log(data.data.title)
+                    const id = data.data.id
+                    const peaks = data.data.peaks
+                    const title = data.data.title
+
+                    // Display the fetched image
+                    document.getElementById('image-container').innerHTML = `<img src="${site}/img/${id}-${range}.png?${Math.random() }" alt="Fetched Image">`;
+                    document.getElementById('title-container').innerHTML = title;
+                    ///document.getElementById('thumbnail-container').innerHTML = `test`;
+                    document.getElementById('thumbnail-container').innerHTML = `<img src="https://img.youtube.com/vi/${id}/mqdefault.jpg" alt="Fetched Image">`;
+
+                    fill_text(id,peaks)
+                })
+                .catch(error => {
+                    document.getElementById('image-container').innerHTML = error
+                    console.error('Error fetching data:', error)
+                });
+        }
+
+        function fill_text(id, peaks){
+            text = ""
+            let cont = 0
+            //peaks.sort((a, b) => b - a);
+            for(i in peaks){
+                cont++
+                let ts = Math.max(peaks[i]-20 , 0)
+                date = new Date(ts * 1000).toISOString().slice(11, 19);
+                text = text + `<a href="https://www.youtube.com/watch?v=${id}&t=${ts}" target="_blank"> highlight ${cont} @ ${date}</a>`
+                text = text + " <br> "
+            }
+            document.getElementById('text-container').innerHTML = text;
+        }
+
+        // Update the displayed parameter value as the slider changes
+        document.getElementById('prominence').addEventListener('input', function() {
+            document.getElementById('parameter-value-p').textContent = this.value;
+        });
+        document.getElementById('range').addEventListener('input', function() {
+            document.getElementById('parameter-value-r').textContent = this.value;
+        });
+    </script>
+</body>
+</html>
