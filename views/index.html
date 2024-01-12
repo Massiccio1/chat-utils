@@ -104,7 +104,7 @@
                     ///document.getElementById('thumbnail-container').innerHTML = `test`;
                     document.getElementById('thumbnail-container').innerHTML = `<img src="https://img.youtube.com/vi/${id}/mqdefault.jpg" alt="Fetched Image">`;
 
-                    fill_text(id,peaks)
+                    fill_text(id,peaks, range)
                 })
                 .catch(error => {
                     document.getElementById('image-container').innerHTML = error
@@ -112,13 +112,14 @@
                 });
         }
 
-        function fill_text(id, peaks){
+        function fill_text(id, peaks, range = "20"){
             text = ""
+            range = parseInt(range)
             let cont = 0
             //peaks.sort((a, b) => b - a);
             for(i in peaks){
                 cont++
-                let ts = Math.max(peaks[i]-20 , 0)
+                let ts = Math.max(peaks[i]-Math.floor(range/2) , 0)         //se il pico è  a 10 e range  = 30
                 date = new Date(ts * 1000).toISOString().slice(11, 19);
                 text = text + `<a href="https://www.youtube.com/watch?v=${id}&t=${ts}" target="_blank"> highlight ${cont} @ ${date}</a>`
                 text = text + " <br> "

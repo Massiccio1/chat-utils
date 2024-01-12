@@ -1,12 +1,19 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, redirect, request, jsonify, render_template, send_from_directory
 from flask_cors import CORS, cross_origin
 import my_utils
 import numpy as np
+import os
 
 app = Flask(__name__,
             static_folder='img',
             template_folder='views')
 cors = CORS(app)
+
+def get_filenames(folder_path):
+    return [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
+
+
+
 
 @app.route('/parse_request', methods=['POST'])
 @cross_origin()
@@ -88,6 +95,18 @@ def parse():
 
         return jsonify(response)
     
+
+@app.route('/readFile/<filename>')
+def read_file(filename):
+    file_path = os.path.join('csv', filename)
+
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
+            file_content = file.read()
+        return file_content
+    else:
+        return jsonify(error='File not found'), 404
+
 @app.route('/status', methods=['GET'])
 @cross_origin()
 def status():
@@ -98,5 +117,39 @@ def status():
 def index():
     return render_template('index.html')
 
+
+@app.route('/file')
+@cross_origin()
+def file():
+    folder_path = './chat'  # Change this to the path of the folder you want to read
+
+    # Get all filenames in the folder
+    filenames = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
+
+    return render_template('file.html', filenames=filenames)
+
+# @app.route('/', methods=['GET'])
+# @cross_origin()
+# def home():
+#     return redirect("/index")
+
+
+@app.route('/chat', methods=['GET', 'POST'])
+@cross_origin()
+def tmp():
+    folder_path = 'chat'  # Change this to the path of the folder you want to read
+
+    if request.method == 'POST':
+        selected_filename = request.form['filename']
+        file_path = os.path.join(folder_path, selected_filename)
+
+        # Read the content of the selected file
+        with open(file_path, 'r') as file:
+            file_content = file.read()
+
+        return render_template('file.html', filenames=get_filenames(folder_path), selected_filename=selected_filename, file_content=file_content)
+
+    return render_template('file.html', filenames=get_filenames(folder_path))
+
 if __name__ == '__main__':
-    app.run(host='127.0.0.1',port=8060)
+    app.run(host='0.0.0.0',port=8060)

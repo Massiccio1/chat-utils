@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Content Viewer</title>
+  <script>
+    function readFile() {
+      var fileInput = document.getElementById('fileInput');
+      var filename = fileInput.value; // Assuming the dropdown contains filenames
+
+      fetch(`/readFile/${filename}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('File not found');
+          }
+          return response.text();
+        })
+        .then(content => {
+          document.getElementById('fileContent').innerText = content;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+  </script>
+</head>
+<body>
+  <h1>File Content Viewer</h1>
+
+  <label for="fileInput">Select a file:</label>
+  <input type="text" id="fileInput" placeholder="Enter filename">
+  <button onclick="readFile()">Read File</button>
+
+  <div>
+    <h2>File Content:</h2>
+    <pre id="fileContent"></pre>
+  </div>
+</body>
+</html>

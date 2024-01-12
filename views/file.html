@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <style>
+        table, th, td {
+          border: 1px solid black;
+        }
+        </style>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Names</title>
+</head>
+<body>
+    <h1>File Names</h1>
+    <form action="#" method="post">
+        <label for="filename">Select a file:</label>
+        <select id="filename" name="filename">
+            {% for filename in filenames %}
+                <option value="{{ filename }}">{{ filename }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+    {% if selected_filename %}
+        <h2>Content of {{ selected_filename }}</h2>
+        <pre>{{ file_content | safe}}</pre>
+    {% endif %}
+</body>
+</html>

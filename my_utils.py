@@ -1,16 +1,20 @@
 import pandas as pd
 import numpy as np
-import os
+import os   
 import config
 import matplotlib.pyplot as plt
 from chat_downloader import ChatDownloader
 from scipy.signal import find_peaks
 from tempfile import TemporaryFile
+import time
 
 
 url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' 
 url = 'https://www.youtube.com/watch?v=YspBTHE-55I' # 1:32:00
 # url = 'https://www.youtube.com/watch?v=6J6QqtHKAlw' # 6:xx:xx
+
+def int_to_ts(sec):
+    return time.strftime('%H:%M:%S', sec)
 
 
 def get_chat(url):
@@ -19,7 +23,7 @@ def get_chat(url):
     id=chat.id
     title = chat.title
     print(f"using file: {id}")
-    print(os. getcwd())
+    # print(os. getcwd())
     if not os.path.isfile(f"raw_csv/{id}.csv"):
         chat = ChatDownloader().get_chat(url, output=f"raw_csv/{id}.csv") 
         for message in chat:                        # iterate over messages
@@ -29,22 +33,64 @@ def get_chat(url):
         
         df=pd.read_csv(f"raw_csv/{id}.csv", usecols=config.FILTER_CSV)
         df.to_csv(f"csv/{id}.csv")
-        
+    
+    if not os.path.isfile(f"chat/{id}.html"):
+        build_html(id)
+    
     return id, title
 
 def save_data(id, range, data):
-    print("saving....")
+    # print("saving....")
     # if os.path.isfile(f'data/{id}.npy'):
     #     os.remove(f'data/{id}.npy')
     with open(f'data/{id}-{range}.npy', 'wb') as f:
         np.save(f, data)
         
 def load_data(id,range):
-    print("loading....")
+    # print("loading....")
     data = np.empty((1,1))
     with open(f'data/{id}-{range}.npy', 'rb') as f:
         data = np.load(f)
     return data
+
+def build_html(id):
+    
+    print("building html table")
+    full = pd.read_csv(f"csv/{id}.csv")
+    head = "<table>"
+    tail = "</table>"
+    table = ""+head
+    """
+    <table>
+        <tr>
+            <th>Company</th>
+            <th>Contact</th>
+            <th>Country</th>
+        </tr>
+        <tr>
+            <td>Alfreds Futterkiste</td>
+            <td>Maria Anders</td>
+            <td>Germany</td>
+        </tr>
+        <tr>
+            <td>Centro comercial Moctezuma</td>
+            <td>Francisco Chang</td>
+            <td>Mexico</td>
+        </tr>
+    </table>
+    """
+    for index, message in full.iterrows():
+        sec = message.time_in_seconds
+        if sec < 0:
+            sec = 0
+        text = f'<tr><td>{time.strftime("%H:%M:%S", time.gmtime(sec))}</td><td>{message["author.name"]}</td><td>{message.message}</td></tr>\n'
+        table = table + text
+    table=table+tail
+    with open(f"chat/{id}.html", "w") as text_file:
+        text_file.write(table)
+    
+    print("done with html")
+    return 0
 
 def get_peaks(id, prominence=0.5, range=60):
     timeline_density=np.empty((1,1))
@@ -52,7 +98,7 @@ def get_peaks(id, prominence=0.5, range=60):
         full = pd.read_csv(f"csv/{id}.csv")
         # slim = pd.read_csv(f"csv/{id}.csv", usecols=['timestamp'])
         time0=int(full['time_in_seconds'].iloc[0])
-        print(f"zero time: {time0}")
+        # print(f"zero time: {time0}")
 
         ts = full['time_in_seconds'].to_numpy()
         ts = ts.astype(int) - time0         #rendo 0 index
@@ -97,7 +143,7 @@ def get_peaks(id, prominence=0.5, range=60):
     peaks2, _ = find_peaks(timeline_density[:,1], prominence=prominence)
 
     # print(peaks2)
-    print(timeline_density[peaks2[0], 0])
+    # print(timeline_density[peaks2[0], 0])
     
     # peaks2 = peaks2[(avg > peaks2) | (peaks2 >avg)]
     
@@ -125,8 +171,8 @@ def get_peaks(id, prominence=0.5, range=60):
     #     for i in range(peaks3.size):
         
     
-    print(peaks2)
-    print(peaks3)
+    # print(peaks2)
+    # print(peaks3)
             
     plt.grid()
     plt.axhline(y = avg, color = 'r', linestyle = '-') 
