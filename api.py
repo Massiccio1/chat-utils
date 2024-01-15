@@ -120,7 +120,7 @@ def info():
             data = json.load(json_file)
         
             # Print the type of data variable
-            html = html + f'<br>id: {data["id"]}<br> title: {data["title"]}<br><img src="{data["thumbnail"]}"><br>timestamp: {data["timestamp"]}<br>date: {data["datetime"]}<br>duration: {data["duration"]}<br>-----------------------------------------------<br>'
+            html = html + f'<br>id: {data["id"]}<br>url: {data["url"]}<br>title: {data["title"]}<br><img src="{data["thumbnail"]}"><br>timestamp: {data["timestamp"]}<br>date: {data["datetime"]}<br>duration: {data["duration"]}<br>-----------------------------------------------<br>'
         
             # Print the data of dictionary
         

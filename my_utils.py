@@ -63,6 +63,7 @@ def build_info(chat):
     tn=f"https://img.youtube.com/vi/{chat.id}/mqdefault.jpg"
     info = {
         "id":chat.id,
+        "url":f"https://youtube.com/watch?v={chat.id}",
         "title":chat.title,
         "thumbnail":tn,
         "timestamp":chat.start_time//1000000,
