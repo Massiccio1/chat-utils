@@ -90,8 +90,8 @@ def chat():
         
         file_content="placeholder"
         
-        if search!="":
-            id = selected_filename[:-5]
+        if search!="":  
+            id = selected_filename[:-5]     #remove .html
             file_content = my_utils.build_html(id, selected_filename, search, False)
             return render_template('file.html', filenames=get_filenames(folder_path), selected_filename=selected_filename, file_content=file_content)
 

@@ -21,6 +21,12 @@ def int_to_ts(sec):
 
 
 def get_chat(url):
+    
+    if url.find("https:/") == -1:
+        #non è un http:url, provo fare un wrap su youtube
+        url = f"https://youtube.com/watch?v={url}"
+        
+    
     chat = ChatDownloader().get_chat(url)       # create a generator
 
     id=chat.id
