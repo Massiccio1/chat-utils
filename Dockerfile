@@ -14,7 +14,7 @@ WORKDIR /app
 EXPOSE 8060
 COPY . /app
 
-CMD api.py
+CMD python3 api.py
 
 
 

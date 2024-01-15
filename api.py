@@ -13,44 +13,6 @@ def get_filenames(folder_path):
     return [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
 
 
-
-
-@app.route('/parse_request', methods=['POST'])
-@cross_origin()
-def parse_request():
-    try:
-        # Assuming the request contains a JSON body
-        print("inizio")
-        request_data = request.get_json()
-        print("parsed")
-        # Accessing values from the JSON body
-        value1 = request_data.get('key1')
-        value2 = request_data.get('key2')
-
-        # Do something with the values (e.g., print or process)
-        print(f"Value 1: {value1}")
-        print(f"Value 2: {value2}")
-
-        # You can also return a response
-        response = {
-            'success': True,
-            'message': 'Request successfully processed',
-            'data': {
-                'value1': value1,
-                'value2': value2
-            }
-        }
-
-        return jsonify(response)
-
-    except Exception as e:
-        # Handle exceptions if needed
-        response = {
-            'success': False,
-            'message': f'Error: {str(e)}'
-        }
-
-        return jsonify(response)
     
 @app.route('/parse', methods=['POST'])
 @cross_origin()
@@ -96,17 +58,6 @@ def parse():
         return jsonify(response)
     
 
-@app.route('/readFile/<filename>')
-def read_file(filename):
-    file_path = os.path.join('csv', filename)
-
-    if os.path.exists(file_path):
-        with open(file_path, 'r') as file:
-            file_content = file.read()
-        return file_content
-    else:
-        return jsonify(error='File not found'), 404
-
 @app.route('/status', methods=['GET'])
 @cross_origin()
 def status():
@@ -117,16 +68,6 @@ def status():
 def index():
     return render_template('index.html')
 
-
-@app.route('/file')
-@cross_origin()
-def file():
-    folder_path = './chat'  # Change this to the path of the folder you want to read
-
-    # Get all filenames in the folder
-    filenames = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
-
-    return render_template('file.html', filenames=filenames)
 
 # @app.route('/', methods=['GET'])
 # @cross_origin()
