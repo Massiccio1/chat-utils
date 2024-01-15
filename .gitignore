@@ -8,6 +8,8 @@ csv/*
 raw_csv/*
 data/*
 chat/*
+info/*
+
 # C extensions
 *.so
 

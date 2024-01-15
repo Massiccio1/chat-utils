@@ -37,11 +37,18 @@
     
 
     <button onclick="postData()">Fetch Data</button>
-    <button onclick="test()">Test</button>
+    <!-- <button onclick="chat()">chat</button> -->
+    <form action="/chat">
+        <input type="submit" value="go to chat" />
+    </form>
+    <form action="/info">
+        <input type="submit" value="go to info" />
+    </form>
     <table>
         <tr>
           <th>
             
+            <div id="id-container"></div>
             <div id="image-container"></div>
           </th>
           <th>
@@ -67,6 +74,7 @@
             document.getElementById('text-container').innerHTML = ""
             document.getElementById('title-container').innerHTML = ""
             document.getElementById('thumbnail-container').innerHTML = ""
+            document.getElementById('id-container').innerHTML = ""
 
 
             // Make an API request with link and parameter
@@ -101,6 +109,7 @@
                     // Display the fetched image
                     document.getElementById('image-container').innerHTML = `<img src="${site}/img/${id}-${range}.png?${Math.random() }" alt="Fetched Image">`;
                     document.getElementById('title-container').innerHTML = title;
+                    document.getElementById('id-container').innerHTML = id;
                     ///document.getElementById('thumbnail-container').innerHTML = `test`;
                     document.getElementById('thumbnail-container').innerHTML = `<img src="https://img.youtube.com/vi/${id}/mqdefault.jpg" alt="Fetched Image">`;
 

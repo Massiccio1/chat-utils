@@ -7,6 +7,9 @@ from chat_downloader import ChatDownloader
 from scipy.signal import find_peaks
 from tempfile import TemporaryFile
 import time
+import re
+import datetime
+import json
 
 
 url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' 
@@ -35,7 +38,10 @@ def get_chat(url):
         df.to_csv(f"csv/{id}.csv")
     
     if not os.path.isfile(f"chat/{id}.html"):
-        build_html(id)
+        build_html(id, title)
+        
+    if not os.path.isfile(f"info/{id}.json"):
+        build_info(chat)
     
     return id, title
 
@@ -53,11 +59,24 @@ def load_data(id,range):
         data = np.load(f)
     return data
 
-def build_html(id):
+def build_info(chat):
+    tn=f"https://img.youtube.com/vi/{chat.id}/mqdefault.jpg"
+    info = {
+        "id":chat.id,
+        "title":chat.title,
+        "thumbnail":tn,
+        "timestamp":chat.start_time//1000000,
+        "datetime":datetime.datetime.fromtimestamp(int(chat.start_time)/1000000).strftime("%d/%m/%Y, %H:%M:%S"),
+        "duration":chat.duration
+    }
+    with open(f"info/{chat.id}.json", 'w') as outfile:
+        json.dump(info, outfile)
+        
+def build_html(id, title, filter="", save=True):
     
     print("building html table")
     full = pd.read_csv(f"csv/{id}.csv")
-    head = "<table>"
+    head = f"<h2>{title}</h2><br><table>"
     tail = "</table>"
     table = ""+head
     """
@@ -78,19 +97,30 @@ def build_html(id):
             <td>Mexico</td>
         </tr>
     </table>
-    """
+    """       
+    pattern = re.compile(filter, re.IGNORECASE)
     for index, message in full.iterrows():
+        
+        if filter!="":
+            match = pattern.search(message.message)
+            # Check if a match is found
+            if not match:
+               continue
+                
         sec = message.time_in_seconds
         if sec < 0:
             sec = 0
         text = f'<tr><td>{time.strftime("%H:%M:%S", time.gmtime(sec))}</td><td>{message["author.name"]}</td><td>{message.message}</td></tr>\n'
         table = table + text
     table=table+tail
-    with open(f"chat/{id}.html", "w") as text_file:
-        text_file.write(table)
     
-    print("done with html")
-    return 0
+    if save:
+        with open(f"chat/{id}.html", "w") as text_file:
+            text_file.write(table)
+        print("done with html")
+        return 0
+    else:
+        return table
 
 def get_peaks(id, prominence=0.5, range=60):
     timeline_density=np.empty((1,1))
@@ -179,9 +209,9 @@ def get_peaks(id, prominence=0.5, range=60):
     plt.plot(*zip(*timeline_density))
     plt.plot(peaks3+ time0, timeline_density[:,1][peaks3], "or")
     # plt.plot(peaks1+ time0, density[peaks1], "ob", color = 'g')
-    if os.path.isfile(f'img/{id}.png'):
-        os.remove(f'img/{id}.png')
-    plt.savefig(f'img/{id}-{range}.png')    
+    if os.path.isfile(f'img/{id}-{range}.png'):
+        os.remove(f'img/{id}-{range}.png')
+    plt.savefig(f'img/{id}-{range}.png')
     plt.close()
     # plt.show()
 
