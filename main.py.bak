@@ -8,9 +8,11 @@ from scipy.signal import find_peaks
 from tempfile import TemporaryFile
 
 
-url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' 
-url = 'https://www.youtube.com/watch?v=YspBTHE-55I' # 1:32:00
-# url = 'https://www.youtube.com/watch?v=6J6QqtHKAlw' # 6:xx:xx
+#TEMPLATE
+
+
+url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' #lofi for love chat
+url = 'https://www.youtube.com/watch?v=YspBTHE-55I' # duration: 1:32:00
 
 
 def get_chat(url):
@@ -41,14 +43,13 @@ def load_data(id):
 
 def get_peaks(id):
     timeline_density=np.empty()
-    if not os.path.isfile(f"data/{id}.csv"):    #numpy non salvato
+    if not os.path.isfile(f"data/{id}.csv"):    #if numpy not saved
         full = pd.read_csv(f"csv/{id}.csv")
-        # slim = pd.read_csv(f"csv/{id}.csv", usecols=['timestamp'])
         time0=int(full['time_in_seconds'].iloc[0])
         print(f"zero time: {time0}")
 
         ts = full['time_in_seconds'].to_numpy()
-        ts = ts.astype(int) - time0         #rendo 0 index
+        ts = ts.astype(int) - time0         #make shift index to match 0 value
 
 
         print(ts)
@@ -56,7 +57,7 @@ def get_peaks(id):
 
         timeline=np.arange(ts[0], ts[-1]+1, dtype=float)
 
-        #duplico e metto a zero il secondo
+        #timeline of (timestamp, count)
         timeline = np.repeat(timeline, 2).reshape((range_ts+1,2))    
         timeline_density = timeline.copy()   
         timeline[:,1]=0
@@ -70,11 +71,11 @@ def get_peaks(id):
         timeline_density[:,0] = timeline_density[:,0]  + time0
         print(timeline)
 
-        win_size=60      #secondi della finestra
-        window = np.ones((1,win_size))
+        win_size=60      #size in seconds for the convolve window
+        window = np.ones((1,win_size))  
         window=window[0]*(1/win_size)
 
-        density = np.convolve(timeline[:,1],window, mode='same')
+        density = np.convolve(timeline[:,1],window, mode='same')    #same size of original
         # print("density: ", density)
         timeline_density[:,1] = density
         save_data(id,timeline_density)

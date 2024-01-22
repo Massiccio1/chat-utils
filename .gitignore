@@ -9,6 +9,7 @@ raw_csv/*
 data/*
 chat/*
 info/*
+test.py
 
 # C extensions
 *.so

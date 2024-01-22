@@ -12,9 +12,8 @@ import datetime
 import json
 
 
-url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' 
-url = 'https://www.youtube.com/watch?v=YspBTHE-55I' # 1:32:00
-# url = 'https://www.youtube.com/watch?v=6J6QqtHKAlw' # 6:xx:xx
+url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk'   # lo-fi grl for live chat
+url = 'https://www.youtube.com/watch?v=YspBTHE-55I' #duration: 1:32:00
 
 def int_to_ts(sec):
     return time.strftime('%H:%M:%S', sec)
@@ -23,7 +22,7 @@ def int_to_ts(sec):
 def get_chat(url):
     
     if url.find("https:/") == -1:
-        #non è un http:url, provo fare un wrap su youtube
+        #if there is only an id, try youtube
         url = f"https://youtube.com/watch?v={url}"
         
     
@@ -53,8 +52,6 @@ def get_chat(url):
 
 def save_data(id, range, data):
     # print("saving....")
-    # if os.path.isfile(f'data/{id}.npy'):
-    #     os.remove(f'data/{id}.npy')
     with open(f'data/{id}-{range}.npy', 'wb') as f:
         np.save(f, data)
         
@@ -87,6 +84,7 @@ def build_html(id, title, filter="", save=True):
     tail = "</table>"
     table = ""+head
     """
+    template
     <table>
         <tr>
             <th>Company</th>
@@ -131,14 +129,14 @@ def build_html(id, title, filter="", save=True):
 
 def get_peaks(id, prominence=0.5, range=60):
     timeline_density=np.empty((1,1))
-    if not os.path.isfile(f"data/{id}-{range}.csv"):    #numpy non salvato
+    if not os.path.isfile(f"data/{id}-{range}.csv"):    #if numpy matrix not saved
         full = pd.read_csv(f"csv/{id}.csv")
         # slim = pd.read_csv(f"csv/{id}.csv", usecols=['timestamp'])
         time0=int(full['time_in_seconds'].iloc[0])
         # print(f"zero time: {time0}")
 
         ts = full['time_in_seconds'].to_numpy()
-        ts = ts.astype(int) - time0         #rendo 0 index
+        ts = ts.astype(int) - time0         #shift index to match 0
 
 
         # print(ts)
@@ -146,7 +144,7 @@ def get_peaks(id, prominence=0.5, range=60):
 
         timeline=np.arange(ts[0], ts[-1]+1, dtype=float)
 
-        #duplico e metto a zero il secondo
+        #array of (timestamp, messages)
         timeline = np.repeat(timeline, 2).reshape((range_ts+1,2))    
         timeline_density = timeline.copy()   
         timeline[:,1]=0
@@ -160,7 +158,7 @@ def get_peaks(id, prominence=0.5, range=60):
         timeline_density[:,0] = timeline_density[:,0]  + time0
         # print(timeline)
 
-        win_size=range      #secondi della finestra
+        win_size=range      # size of concolve window
         window = np.ones((1,win_size))
         window=window[0]*(1/win_size)
 

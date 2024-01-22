@@ -18,13 +18,6 @@ CMD python3 api.py
 
 
 
-#           docker build -t dockerhub.outer-heaven.duckdns.org/chat:latest .
+#           docker build -t USESR/chat:latest .
+#           docker run -p 8060:8060 USER/chat:latest
 
-#           docker run -it -p 8060:8060 dockerhub.outer-heaven.duckdns.org/chat:latest /bin/sh
-#           docker run -p 8060:8060 dockerhub.outer-heaven.duckdns.org/chat:latest
-
-
-#           docker push dockerhub.outer-heaven.duckdns.org/chat:latest
-
-
-#           docker build -t dockerhub.outer-heaven.duckdns.org/chat:latest . &&  docker run -it -p 8060:8060 chat.outer-heaven.duckdns.org:latest /bin/sh
