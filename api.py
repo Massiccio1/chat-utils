@@ -1,4 +1,4 @@
-from flask import Flask, redirect, request, jsonify, render_template, send_from_directory
+from flask import Flask, redirect, request, jsonify, render_template, send_from_directory, url_for
 from flask_cors import CORS, cross_origin
 import my_utils
 import numpy as np
@@ -28,7 +28,7 @@ def create_folder(folder_name):
 @app.route("/")
 @cross_origin()
 def home():
-    return redirect("/index")
+    return redirect(url_for("index"))
 
 @app.route('/parse', methods=['POST'])
 @cross_origin()
