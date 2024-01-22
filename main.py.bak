@@ -11,7 +11,7 @@ from tempfile import TemporaryFile
 #TEMPLATE
 
 
-url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' #lofi for love chat
+url = 'https://www.youtube.com/watch?v=jfKfPfyJRdk' #lofi for live chat
 url = 'https://www.youtube.com/watch?v=YspBTHE-55I' # duration: 1:32:00
 
 
