@@ -4,7 +4,7 @@ import my_utils
 import numpy as np
 import os
 import json
- 
+import os
 
 app = Flask(__name__,
             static_folder='img',
@@ -14,7 +14,15 @@ cors = CORS(app)
 def get_filenames(folder_path):
     return [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
 
-
+def create_folder(folder_name):
+    # Check if the folder already exists
+    if not os.path.exists(folder_name):
+        # If not, create the folder
+        os.makedirs(folder_name)
+        # print(f"Folder '{folder_name}' created successfully.")
+    else:
+        # print(f"Folder '{folder_name}' already exists.")
+        pass
     
 @app.route('/parse', methods=['POST'])
 @cross_origin()
@@ -47,6 +55,7 @@ def parse():
                 "title": title
             }
         }
+        
 
         return jsonify(response)
 
@@ -128,4 +137,10 @@ def info():
     return html
 
 if __name__ == '__main__':
+    create_folder("chat")
+    create_folder("raw_csv")
+    create_folder("csv")
+    create_folder("img")
+    create_folder("data")
+    create_folder("info")
     app.run(host='0.0.0.0',port=8060)
