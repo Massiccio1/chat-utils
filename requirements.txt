@@ -1,0 +1,1 @@
+pip install matplotlib pandas chat_downloader scipy Flask flask_cors
