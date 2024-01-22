@@ -24,6 +24,12 @@ def create_folder(folder_name):
         # print(f"Folder '{folder_name}' already exists.")
         pass
     
+    
+@app.route("/")
+@cross_origin()
+def home():
+    return redirect("/index")
+
 @app.route('/parse', methods=['POST'])
 @cross_origin()
 def parse():
