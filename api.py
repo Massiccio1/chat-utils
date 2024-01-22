@@ -24,11 +24,14 @@ def create_folder(folder_name):
         # print(f"Folder '{folder_name}' already exists.")
         pass
     
-    
+
 @app.route("/")
+@app.route('/index', methods=['GET'])
 @cross_origin()
-def home():
-    return redirect(url_for("index"))
+def index():
+    return render_template('index.html')
+
+
 
 @app.route('/parse', methods=['POST'])
 @cross_origin()
@@ -79,11 +82,6 @@ def parse():
 @cross_origin()
 def status():
     return jsonify({"response":"status ok"})
-
-@app.route('/index', methods=['GET'])
-@cross_origin()
-def index():
-    return render_template('index.html')
 
 
 
