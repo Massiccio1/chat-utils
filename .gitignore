@@ -3,11 +3,18 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+
+img/
 img/*
+csv/
 csv/*
+raw_csv/
 raw_csv/*
+data/
 data/*
+chat/
 chat/*
+info/
 info/*
 test.py
 
