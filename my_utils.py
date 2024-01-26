@@ -32,33 +32,40 @@ def get_chat(url):
     title = chat.title
     print(f"using file: {id}")
     # print(os. getcwd())
-    if not os.path.isfile(f"raw_csv/{id}.csv"):
-        chat = ChatDownloader().get_chat(url, output=f"raw_csv/{id}.csv") 
+    if not os.path.isfile(f"data/{id}/raw-{id}.csv"):
+        print("no raw for: ", id, "\ndownloading...")
+        chat = ChatDownloader().get_chat(url, output=f"data/{id}/tmp-raw-{id}.csv") 
         for message in chat:                        # iterate over messages
-            chat.print_formatted(message)     
+            chat.print_formatted(message)
+        os.rename(f"data/{id}/tmp-raw-{id}.csv",f"data/{id}/raw-{id}.csv")  
+        print("done")
 
-    if not os.path.isfile(f"csv/{id}.csv"):
-        
-        df=pd.read_csv(f"raw_csv/{id}.csv", usecols=config.FILTER_CSV)
-        df.to_csv(f"csv/{id}.csv")
-    
-    if not os.path.isfile(f"chat/{id}.html"):
+    if not os.path.isfile(f"data/{id}/parsed-{id}.csv"):
+        print("no parsed file for: ", id, "\ncreating...")
+        df=pd.read_csv(f"data/{id}/raw-{id}.csv", usecols=config.FILTER_CSV)
+        df.to_csv(f"data/{id}/parsed-{id}.csv")
+        print("done")
+    print("check parwsed: ", not os.path.isfile(f"data/{id}/parsed-{id}.csv"))
+    if not os.path.isfile(f"data/{id}/chat-{id}.html"):
+        print("no chat file for: ", id, "\ncreating...")
         build_html(id, title)
-        
-    if not os.path.isfile(f"info/{id}.json"):
+        print("done")
+    if not os.path.isfile(f"data/{id}/info-{id}.json"):
+        print("no info file for: ", id, "\ncreating...")
         build_info(chat)
+        print("done")
     
     return id, title
 
 def save_data(id, range, data):
     # print("saving....")
-    with open(f'data/{id}-{range}.npy', 'wb') as f:
+    with open(f'data/{id}/{id}-{range}.npy', 'wb') as f:
         np.save(f, data)
         
 def load_data(id,range):
     # print("loading....")
     data = np.empty((1,1))
-    with open(f'data/{id}-{range}.npy', 'rb') as f:
+    with open(f'data/{id}/{id}-{range}.npy', 'rb') as f:
         data = np.load(f)
     return data
 
@@ -73,13 +80,13 @@ def build_info(chat):
         "datetime":datetime.datetime.fromtimestamp(int(chat.start_time)/1000000).strftime("%d/%m/%Y, %H:%M:%S"),
         "duration":chat.duration
     }
-    with open(f"info/{chat.id}.json", 'w') as outfile:
+    with open(f"data/{chat.id}/{chat.id}.json", 'w') as outfile:
         json.dump(info, outfile)
         
 def build_html(id, title, filter="", save=True):
     
     print("building html table")
-    full = pd.read_csv(f"csv/{id}.csv")
+    full = pd.read_csv(f"data/{id}/parsed-{id}.csv")
     head = f"<h2>{title}</h2><br><table>"
     tail = "</table>"
     table = ""+head
@@ -120,7 +127,7 @@ def build_html(id, title, filter="", save=True):
     table=table+tail
     
     if save:
-        with open(f"chat/{id}.html", "w") as text_file:
+        with open(f"data/{id}/{id}.html", "w") as text_file:
             text_file.write(table)
         print("done with html")
         return 0
@@ -129,10 +136,11 @@ def build_html(id, title, filter="", save=True):
 
 def get_peaks(id, prominence=0.5, range=60):
     timeline_density=np.empty((1,1))
-    if not os.path.isfile(f"data/{id}-{range}.csv"):    #if numpy matrix not saved
-        full = pd.read_csv(f"csv/{id}.csv")
+    full = pd.read_csv(f"data/{id}/parsed-{id}.csv")
+    time0=int(full['time_in_seconds'].iloc[0])
+    
+    if not os.path.isfile(f"data/{id}/{id}-{range}.npy"):    #if numpy matrix not saved
         # slim = pd.read_csv(f"csv/{id}.csv", usecols=['timestamp'])
-        time0=int(full['time_in_seconds'].iloc[0])
         # print(f"zero time: {time0}")
 
         ts = full['time_in_seconds'].to_numpy()
@@ -168,6 +176,7 @@ def get_peaks(id, prominence=0.5, range=60):
         save_data(id,range,timeline_density)
     else:
         timeline_density=load_data(id,range)
+        
     # print("timeline density pre: ",timeline_density)
     # print("density: ", density)
     # print("timeline density after: ",timeline_density)
@@ -214,9 +223,9 @@ def get_peaks(id, prominence=0.5, range=60):
     plt.plot(*zip(*timeline_density))
     plt.plot(peaks3+ time0, timeline_density[:,1][peaks3], "or")
     # plt.plot(peaks1+ time0, density[peaks1], "ob", color = 'g')
-    if os.path.isfile(f'img/{id}-{range}.png'):
-        os.remove(f'img/{id}-{range}.png')
-    plt.savefig(f'img/{id}-{range}.png')
+    if os.path.isfile(f'data/{id}/{id}-{range}.png'):
+        os.remove(f'data/{id}/{id}-{range}.png')
+    plt.savefig(f'data/{id}/{id}-{range}.png')
     plt.close()
     # plt.show()
 

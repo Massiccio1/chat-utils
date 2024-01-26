@@ -107,7 +107,7 @@
                     const title = data.data.title
 
                     // Display the fetched image
-                    document.getElementById('image-container').innerHTML = `<img src="${site}/img/${id}-${range}.png?${Math.random() }" alt="Fetched Image">`;
+                    document.getElementById('image-container').innerHTML = `<img src="${site}/data/${id}/${id}-${range}.png?${Math.random() }" alt="Fetched Image">`;
                     document.getElementById('title-container').innerHTML = title;
                     document.getElementById('id-container').innerHTML = id;
                     ///document.getElementById('thumbnail-container').innerHTML = `test`;
@@ -128,7 +128,7 @@
             //peaks.sort((a, b) => b - a);
             for(i in peaks){
                 cont++
-                let ts = Math.max(peaks[i]-Math.floor(range/2) , 0)         //se il pico è  a 10 e range  = 30
+                let ts = Math.max(peaks[i]-Math.floor(range/2) , 0)    
                 date = new Date(ts * 1000).toISOString().slice(11, 19);
                 text = text + `<a href="https://www.youtube.com/watch?v=${id}&t=${ts}" target="_blank"> highlight ${cont} @ ${date}</a>`
                 text = text + " <br> "

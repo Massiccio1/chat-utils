@@ -7,12 +7,13 @@ import json
 import os
 
 app = Flask(__name__,
-            static_folder='img',
+            static_folder='data',
             template_folder='views')
 cors = CORS(app)
 
 def get_filenames(folder_path):
-    return [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
+    # print("all folders: ", os.listdir(folder_path))
+    return os.listdir(folder_path)
 
 def create_folder(folder_name):
     # Check if the folder already exists
@@ -38,7 +39,6 @@ def index():
 def parse():
     try:
         # Assuming the request contains a JSON body
-        print("inizio")
         request_data = request.get_json()
         print("parsed: ", request_data)
         # Accessing values from the JSON body
@@ -95,7 +95,7 @@ def status():
 @cross_origin()
 def chat():
     # print("in chat")
-    folder_path = 'chat'  # Change this to the path of the folder you want to read
+    folder_path = 'data'  # Change this to the path of the folder you want to read
 
     if request.method == 'POST':
         selected_filename = request.form['filename']
@@ -103,14 +103,15 @@ def chat():
         
         file_content="placeholder"
         
-        if search!="":  
-            id = selected_filename[:-5]     #remove .html
+        if search!="":
+            print("folders found: ", search)
+            id = selected_filename    #remove .html
             file_content = my_utils.build_html(id, selected_filename, search, False)
             return render_template('file.html', filenames=get_filenames(folder_path), selected_filename=selected_filename, file_content=file_content)
 
         else:
             # print("search for: ",search)
-            file_path = os.path.join(folder_path, selected_filename)
+            file_path = os.path.join(folder_path, selected_filename, selected_filename+".html")
 
             # Read the content of the selected file
             with open(file_path, 'r') as file:
@@ -124,12 +125,12 @@ def chat():
 @cross_origin()
 def info():
     # print("in chat")
-    folder_path = 'info'  # Change this to the path of the folder you want to read
+    folder_path = 'data'  # Change this to the path of the folder you want to read
     files = get_filenames(folder_path)
     # return {"data":files}
     html=""
     for f in files:
-        with open(f'{folder_path}/{f}') as json_file:
+        with open(f'{folder_path}/{f}/{f}.json') as json_file:
             data = json.load(json_file)
         
             # Print the type of data variable
@@ -141,10 +142,5 @@ def info():
     return html
 
 if __name__ == '__main__':
-    create_folder("chat")
-    create_folder("raw_csv")
-    create_folder("csv")
-    create_folder("img")
     create_folder("data")
-    create_folder("info")
     app.run(host='0.0.0.0',port=8060)
