@@ -9,7 +9,6 @@ csv/
 csv/*
 raw_csv/
 raw_csv/*
-data/
 data/*
 chat/
 chat/*
