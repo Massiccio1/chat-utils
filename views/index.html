@@ -99,6 +99,10 @@
                 .then(data => {
                     // Assuming the API returns an image URL
                     console.log(data)
+                    if(!data.success){
+                        console.log("error while parsing")
+                        throw data.message
+                    }
                     console.log(data.data.id)
                     console.log(data.data.peaks)
                     console.log(data.data.title)
