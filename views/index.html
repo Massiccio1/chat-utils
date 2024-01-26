@@ -105,13 +105,15 @@
                     }
                     console.log(data.data.id)
                     console.log(data.data.peaks)
+                    console.log(data.data.prominence)
                     console.log(data.data.title)
                     const id = data.data.id
                     const peaks = data.data.peaks
                     const title = data.data.title
+                    const prominence = data.data.prominence
 
                     // Display the fetched image
-                    document.getElementById('image-container').innerHTML = `<img src="${site}/data/${id}/${id}-${range}.png?${Math.random() }" alt="Fetched Image">`;
+                    document.getElementById('image-container').innerHTML = `<img src="${site}/data/${id}/${id}-${range}-${prominence}.png?${Math.random() }" alt="Fetched Image">`;
                     document.getElementById('title-container').innerHTML = title;
                     document.getElementById('id-container').innerHTML = id;
                     ///document.getElementById('thumbnail-container').innerHTML = `test`;

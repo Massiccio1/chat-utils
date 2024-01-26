@@ -217,16 +217,16 @@ def get_peaks(id, prominence=0.5, range=60):
     
     # print(peaks2)
     # print(peaks3)
-            
-    plt.grid()
-    plt.axhline(y = avg, color = 'r', linestyle = '-') 
-    plt.plot(*zip(*timeline_density))
-    plt.plot(peaks3+ time0, timeline_density[:,1][peaks3], "or")
-    # plt.plot(peaks1+ time0, density[peaks1], "ob", color = 'g')
-    if os.path.isfile(f'data/{id}/{id}-{range}.png'):
-        os.remove(f'data/{id}/{id}-{range}.png')
-    plt.savefig(f'data/{id}/{id}-{range}.png')
-    plt.close()
+    if not os.path.isfile(f'data/{id}/{id}-{range}-{prominence}.png'):
+        plt.grid()
+        plt.axhline(y = avg, color = 'r', linestyle = '-') 
+        plt.plot(*zip(*timeline_density))
+        plt.plot(peaks3+ time0, timeline_density[:,1][peaks3], "or")
+        # plt.plot(peaks1+ time0, density[peaks1], "ob", color = 'g')
+        
+            # os.remove(f'data/{id}/{id}-{range}-{prominence}.png')
+        plt.savefig(f'data/{id}/{id}-{range}-{prominence}.png')
+        plt.close()
     # plt.show()
 
     # for i in peaks3:

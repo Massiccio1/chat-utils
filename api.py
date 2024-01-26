@@ -61,7 +61,8 @@ def parse():
                 'id': id,
                 'peaks': peaks,
                 'range': range,
-                "title": title
+                "title": title,
+                "prominence": prominence/100
             }
         }
         
