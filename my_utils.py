@@ -71,13 +71,20 @@ def load_data(id,range):
 
 def build_info(chat):
     tn=f"https://img.youtube.com/vi/{chat.id}/mqdefault.jpg"
+    timestamp=0
+    datet="0"
+    try:
+        timestamp = chat.start_time//1000000
+        datet = datetime.datetime.fromtimestamp(int(chat.start_time)/1000000).strftime("%d/%m/%Y, %H:%M:%S"),
+    except:
+        pass
     info = {
         "id":chat.id,
         "url":f"https://youtube.com/watch?v={chat.id}",
         "title":chat.title,
         "thumbnail":tn,
-        "timestamp":chat.start_time//1000000,
-        "datetime":datetime.datetime.fromtimestamp(int(chat.start_time)/1000000).strftime("%d/%m/%Y, %H:%M:%S"),
+        "timestamp":timestamp,
+        "datetime":datet,
         "duration":chat.duration
     }
     with open(f"data/{chat.id}/{chat.id}.json", 'w') as outfile:
@@ -137,8 +144,11 @@ def build_html(id, title, filter="", save=True):
 def get_peaks(id, prominence=0.5, range=60):
     timeline_density=np.empty((1,1))
     full = pd.read_csv(f"data/{id}/parsed-{id}.csv")
-    time0=int(full['time_in_seconds'].iloc[0])
-    
+    time0=0
+    try:
+        time0=int(full['time_in_seconds'].iloc[0])
+    except:
+        pass
     if not os.path.isfile(f"data/{id}/{id}-{range}.npy"):    #if numpy matrix not saved
         # slim = pd.read_csv(f"csv/{id}.csv", usecols=['timestamp'])
         # print(f"zero time: {time0}")
