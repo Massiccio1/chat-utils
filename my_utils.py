@@ -127,9 +127,14 @@ def build_html(id, title, filter="", save=True):
                continue
                 
         sec = message.time_in_seconds
-        if sec < 0:
-            sec = 0
-        text = f'<tr><td>{time.strftime("%H:%M:%S", time.gmtime(sec))}</td><td>{message["author.name"]}</td><td>{message.message}</td></tr>\n'
+        time_lable="00:00:00"
+        if sec >= 0:
+            time_lable = time.strftime("%H:%M:%S", time.gmtime(sec))
+        else:
+            # tmp =time_lable = time.strftime("%H:%M:%S", time.gmtime(-sec))
+            time_lable="-"+time.strftime("%H:%M:%S", time.gmtime(-sec))
+            
+        text = f'<tr><td>{time_lable}</td><td>{message["author.name"]}</td><td>{message.message}</td></tr>\n'
         table = table + text
     table=table+tail
     
@@ -146,9 +151,10 @@ def get_peaks(id, prominence=0.5, range=60):
     full = pd.read_csv(f"data/{id}/parsed-{id}.csv")
     time0=0
     try:
-        time0=int(full['time_in_seconds'].iloc[0])
+        time0=min( int(full['time_in_seconds'].iloc[0]), 0 )
     except:
         pass
+    print("time0: ", time0)
     if not os.path.isfile(f"data/{id}/{id}-{range}.npy"):    #if numpy matrix not saved
         # slim = pd.read_csv(f"csv/{id}.csv", usecols=['timestamp'])
         # print(f"zero time: {time0}")
@@ -210,6 +216,8 @@ def get_peaks(id, prominence=0.5, range=60):
         
         lower = max(0, p-range//2)
         upper = min(timeline_density.shape[0]-1 , p+range//2)
+        if upper == lower:
+            upper = lower +1
         
         # print("bounds => ", lower, ":", upper)
         
@@ -227,6 +235,7 @@ def get_peaks(id, prominence=0.5, range=60):
     
     # print(peaks2)
     # print(peaks3)
+    
     if not os.path.isfile(f'data/{id}/{id}-{range}-{prominence}.png'):
         plt.grid()
         plt.axhline(y = avg, color = 'r', linestyle = '-') 
@@ -245,6 +254,7 @@ def get_peaks(id, prominence=0.5, range=60):
     
     # print("peaks value: ", timeline_density[peaks3,1])
     # print("ordered peaks: ", np.flip(np.sort(timeline_density[peaks3,0])))
+    peaks3=peaks3+time0
     peaks3=np.unique(peaks3)
     ind = np.argsort(timeline_density[peaks3,1])
     peaks4=np.flip(peaks3[ind])
